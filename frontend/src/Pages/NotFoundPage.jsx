@@ -23,15 +23,15 @@ const NotFoundPage = () => {
 
         {/* Back Home button */}
         <div className="space-y-4">
-          <Link
+          {/* <Link
             to="/"
             className="block w-full rounded-md bg-indigo-500 px-4 py-2 font-semibold text-white hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             Go Back Home
-          </Link>
+          </Link> */}
 
           <Link
-            to="/login"
+            to="/"
             className="block w-full rounded-md bg-gray-700 px-4 py-2 font-semibold text-gray-200 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             Go to Login

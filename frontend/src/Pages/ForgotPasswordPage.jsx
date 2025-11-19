@@ -9,7 +9,7 @@ const ForgotPasswordPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("استعادة كلمة المرور");
+    setError("");
     setIsloading(true);
     try {
       await forgetPassword(email);
@@ -26,7 +26,7 @@ const ForgotPasswordPage = () => {
     return (
       <div className="p-6 bg-gray-800 rounded-xl text-white text-center">
         <h2 className="text-3xl font-bold tracking-tight mb-4">
-          Check Your Email
+          تحقّق من بريدك الإلكتروني
         </h2>
         <p>
           If an account with <strong>{email}</strong> exists, you will receive a
@@ -39,7 +39,7 @@ const ForgotPasswordPage = () => {
   return (
     <div className="p-6 bg-gray-800 rounded-xl">
       <h2 className="mt-6 text-3xl font-bold tracking-tight text-white">
-        Reset Password
+        استعادة كلمة المرور
       </h2>
       {error && <div className="text-red-500 text-center py-2">{error}</div>}
       <form onSubmit={handleSubmit} className="m-3">
