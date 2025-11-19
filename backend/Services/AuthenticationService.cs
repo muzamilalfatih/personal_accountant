@@ -18,11 +18,12 @@ namespace personal_accountant.Services
         private readonly IConfirmationTokenServiceInterface _resetPasswordTokenService;
         private readonly IEmailSenderService _emailService;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _connectionString;
 
         public AuthenticationService(IUserServiceInterface userService, IPasswordServiceInterface passwordService,
             ITokenServiceInterface tokenService, IConfirmationTokenServiceInterface resetPasswordTokenService, IOptions<DatabaseSettings> options,
-            IEmailSenderService emailService, IConfiguration configuration)
+            IEmailSenderService emailService, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _userService = userService;
             _passwordService = passwordService;
@@ -30,6 +31,7 @@ namespace personal_accountant.Services
             _resetPasswordTokenService = resetPasswordTokenService;
             _emailService = emailService;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
             _connectionString = options.Value.DefautConnection;
         }
         public async Task<Result<LoggedUserDTO>> LogInAsync(LoggingDTO request)
@@ -70,17 +72,50 @@ namespace personal_accountant.Services
             Result<int> saveTokenResult = await _resetPasswordTokenService.AddNewAsync(resetPasswordDTO);
             if (!saveTokenResult.Success)
                 return new Result<bool>(false, "An expected error on the server ", false, 500);
-            string resetUrl = $"{_configuration.GetValue<string>("EMAIL_CONFIGURATION:FRONTEND_DOMAIN")}/reset-password/{token}";
+            var context = _httpContextAccessor.HttpContext;
+            string frontendDomain =  context.Request.Headers["Origin"].ToString();
+
+            
+            string resetUrl = $"{frontendDomain}/reset-password/{token}";
             string body = $@"
-                    <html>
-                    <head></head>
-                    <body>
-                        <p>Hello,</p>
-                        <p>Click the link below to reset your password:</p>
-                        <p><a href='{resetUrl}'>Reset your password</a></p>
-                        <p>If you did not request a password reset, you can safely ignore this email.</p>
-                    </body>
-                    </html>";
+<html>
+<head>
+  <meta charset='UTF-8' />
+</head>
+
+<body style='background:#f4f4f4; padding:40px; font-family:Arial, sans-serif; direction:rtl; text-align:right;'>
+
+  <div style='max-width:480px; margin:auto; background:#ffffff; padding:30px; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.1);'>
+
+    <h2 style='color:#111827; margin-bottom:20px; font-size:22px;'>
+      إعادة تعيين كلمة المرور
+    </h2>
+
+    <p style='color:#374151; font-size:16px; line-height:1.6;'>
+      مرحباً،
+    </p>
+
+    <p style='color:#374151; font-size:16px; line-height:1.6;'>
+      اضغط على الزر أدناه لإعادة تعيين كلمة المرور الخاصة بك.
+    </p>
+
+    <div style='text-align:center; margin:30px 0;'>
+      <a href='{resetUrl}'
+         style='background:#4f46e5; color:#ffffff; padding:12px 24px; border-radius:8px;
+                text-decoration:none; font-size:16px; display:inline-block;'>
+        إعادة تعيين كلمة المرور
+      </a>
+    </div>
+
+    <p style='color:#6b7280; font-size:14px; line-height:1.6;'>
+      إذا لم تطلب إعادة تعيين كلمة المرور، تجاهل هذه الرسالة بسهولة.
+    </p>
+
+  </div>
+
+</body>
+</html>";
+
             try
             {
                 await _emailService.SendEmailAsync("muzamilalfatih123@gmail.com", "RESET PASSWORD", body);

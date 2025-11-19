@@ -26,7 +26,7 @@ export default function Navbar() {
             />
 
             <NavLink
-              to="/dashboard"
+              to="/accounts"
               className={({ isActive }) =>
                 `text-xl font-bold truncate max-w-[150px] ${
                   isActive ? "text-indigo-400" : "text-white"

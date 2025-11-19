@@ -20,11 +20,12 @@ namespace personal_accountant.Services
         private readonly IConfirmationTokenServiceInterface _resetPasswordTokenService;
         private readonly IConfiguration _configuration;
         private readonly IEmailSenderService _emailService;
+        private readonly HttpContextAccessor _httpContextAccessor;
         private readonly string _connectionString;
 
         public UserService(IUserRepositoryInterface repo, IPasswordServiceInterface passwordService, ITokenServiceInterface tokenService,
             IConfirmationTokenServiceInterface resetPasswordTokenService, IConfiguration configuration, IEmailSenderService emailService,
-            IOptions<DatabaseSettings> options)
+            IOptions<DatabaseSettings> options, HttpContextAccessor httpContextAccessor)
         {
             _repo = repo;
             _passwordService = passwordService;
@@ -32,6 +33,7 @@ namespace personal_accountant.Services
             _resetPasswordTokenService = resetPasswordTokenService;
             _configuration = configuration;
             _emailService = emailService;
+            _httpContextAccessor = httpContextAccessor;
             _tokenService = tokenService;
             _connectionString = options.Value.DefautConnection;
         }
@@ -54,7 +56,8 @@ namespace personal_accountant.Services
                 return new Result<bool>(false, "An unexpected server error occurred.", false, 500);
 
 
-            string frontendDomain = _configuration.GetValue<string>("EMAIL_CONFIGURATION:FRONTEND_DOMAIN");
+            var context = _httpContextAccessor.HttpContext;
+            string frontendDomain = context.Request.Headers["Origin"].ToString();
             string resetUrl = $"{frontendDomain}/confirm-email/{token}";
 
             string body = $@"
