@@ -40,7 +40,7 @@ const ProfilePage = () => {
       });
       console.log(newUser);
       refreshUser(newUser);
-      navigate("/dashboard");
+      navigate("/accounts");
     } catch (err) {
       console.log(err.response);
       setError(err?.response?.date || "Failed to update profile.");

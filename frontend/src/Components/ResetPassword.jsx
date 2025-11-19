@@ -33,7 +33,7 @@ const ResetPassword = ({ id, token }) => {
         setSuccess(true); // <-- show confirmation instead of redirect
       } else {
         await changePassword(id, password, newPassword);
-        navigate("/dashboard");
+        navigate("/accounts");
       }
     } catch (error) {
       setError(error?.response?.data?.message || "An error occurred");

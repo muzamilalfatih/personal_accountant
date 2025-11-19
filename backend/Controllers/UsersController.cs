@@ -27,6 +27,7 @@ namespace personal_accountant.Controllers
 
         [HttpGet]
         [Authorize(Roles ="Admin")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<UserPublicDTO>>> GetUsers([FromQuery] int? currentUserId)
         {
             Result<IEnumerable<UserPublicDTO>> result = await _service.GetAllAsync(currentUserId);
